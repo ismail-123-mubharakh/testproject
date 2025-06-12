@@ -4,20 +4,21 @@ import 'dart:io';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 
-
 import '../models/category_model.dart';
 import '../models/product_category_model.dart';
 
 class ProductService {
-  static const String _baseUrl1 = 'https://fakestoreapi.com/api/products/category';
-  static const String _baseUrl2 = 'https://fakestoreapi.in/api/products/category?type=mobile';
+  static const String _baseUrl1 =
+      'https://fakestoreapi.com/api/products/category';
+  static const String _baseUrl2 =
+      'https://fakestoreapi.in/api/products/category?type=mobile';
   static const int _timeoutSeconds = 15;
 
   static Future<CategoryModel> fetchCategory() async {
     try {
-      final response = await http.get(
-        Uri.parse('https://fakestoreapi.in/api/products/category'),
-      ).timeout(const Duration(seconds: _timeoutSeconds));
+      final response = await http
+          .get(Uri.parse('https://fakestoreapi.in/api/products/category'))
+          .timeout(const Duration(seconds: _timeoutSeconds));
 
       log("API Response: ${response.statusCode} - ${response.body}");
 
@@ -37,11 +38,16 @@ class ProductService {
       throw Exception('Unknown error: $e');
     }
   }
+
   static Future<ProductCategoryModel> fetchProductList() async {
     try {
-      final response = await http.get(
-        Uri.parse('https://fakestoreapi.in/api/products/category?type=mobile'),
-      ).timeout(const Duration(seconds: _timeoutSeconds));
+      final response = await http
+          .get(
+            Uri.parse(
+              'https://fakestoreapi.in/api/products/category?type=mobile',
+            ),
+          )
+          .timeout(const Duration(seconds: _timeoutSeconds));
 
       log("API Response: ${response.statusCode} - ${response.body}");
 
@@ -61,4 +67,4 @@ class ProductService {
       throw Exception('Unknown error: $e');
     }
   }
-  }
+}

@@ -4,14 +4,14 @@ import 'package:testsc/screens/cart_screen.dart';
 import '../models/product_category_model.dart';
 
 class ProductDetailScreen extends StatefulWidget {
-  final Product product;// You can pass product ID for data fetching
+  final Product product;
 
   const ProductDetailScreen({super.key, required this.product});
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
-
+int _selectedStorageIndex = 0;
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
@@ -29,8 +29,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Product Image (replace with NetworkImage for real app)
-              Container(
+               Container(
                 height: 250,
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
@@ -66,7 +65,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   const Icon(Icons.star, color: Colors.amber, size: 20),
                   const SizedBox(width: 4),
                    Text(
-                      widget.product.discount!.toString(),
+                       widget.product.discount!= null ?   widget.product.discount!.toString() : "",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(width: 16),
@@ -102,14 +101,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildStorageOption('1 TB'),
-                  _buildStorageOption('825 GB'),
-                  _buildStorageOption('512 GB'),
-                ],
-              ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildStorageOption('1 TB',0),
+                    _buildStorageOption('825 GB',1),
+                    _buildStorageOption('512 GB',2),
+                  ],
+                ),
               const SizedBox(height: 30),
 
               // Price and Add to Cart
@@ -117,7 +116,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                    Text(
-                     widget.product.price!.toString(),
+              '\$${widget.product.price!.toStringAsFixed(2)}',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -133,7 +132,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-
+                      backgroundColor:Colors.greenAccent ,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 32, vertical: 16),
                       shape: RoundedRectangleBorder(
@@ -154,7 +153,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildStorageOption(String size) {
+ /* Widget _buildStorageOption(String size) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -166,5 +165,35 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
     );
+  }*/
+
+  Widget _buildStorageOption(String size, int index) {
+    bool isSelected = _selectedStorageIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedStorageIndex = index;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.greenAccent[100] : Colors.grey[200],
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? Colors.greenAccent : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Text(
+          size,
+          style: TextStyle(
+            color: isSelected ? Colors.black : Colors.black,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
   }
+
 }

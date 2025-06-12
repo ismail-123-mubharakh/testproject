@@ -8,7 +8,6 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  // Sample cart items data
   final List<CartItem> cartItems = [
     CartItem(
       name: 'Xbox series X',
@@ -38,7 +37,10 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final subtotal = cartItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+    final subtotal = cartItems.fold(
+      0.0,
+      (sum, item) => sum + (item.price * item.quantity),
+    );
     final discountAmount = subtotal * (discountPercentage / 100);
     final total = subtotal + deliveryFee - discountAmount;
 
@@ -76,7 +78,6 @@ class _CartScreenState extends State<CartScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product Image
           Container(
             width: 80,
             height: 80,
@@ -84,10 +85,7 @@ class _CartScreenState extends State<CartScreen> {
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Image.asset(
-              item.imageUrl,
-              fit: BoxFit.contain,
-            ),
+            child: Image.asset(item.imageUrl, fit: BoxFit.contain),
           ),
           const SizedBox(width: 16),
 
@@ -106,10 +104,7 @@ class _CartScreenState extends State<CartScreen> {
                 const SizedBox(height: 4),
                 Text(
                   item.variant,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -175,12 +170,7 @@ class _CartScreenState extends State<CartScreen> {
           Icon(Icons.check_circle, color: Colors.green[400], size: 16),
           const Text(' Promocode applied'),
           const Spacer(),
-          TextButton(
-            onPressed: () {
-              // Handle promo code change
-            },
-            child: const Text('Change'),
-          ),
+          TextButton(onPressed: () {}, child: const Text('Change')),
         ],
       ),
     );
@@ -192,8 +182,14 @@ class _CartScreenState extends State<CartScreen> {
       child: Column(
         children: [
           _buildSummaryRow('Subtotal:', '\$${subtotal.toStringAsFixed(2)}'),
-          _buildSummaryRow('Delivery Fee:', '\$${deliveryFee.toStringAsFixed(2)}'),
-          _buildSummaryRow('Discount:', '${discountPercentage.toStringAsFixed(0)}%'),
+          _buildSummaryRow(
+            'Delivery Fee:',
+            '\$${deliveryFee.toStringAsFixed(2)}',
+          ),
+          _buildSummaryRow(
+            'Discount:',
+            '${discountPercentage.toStringAsFixed(0)}%',
+          ),
           const Divider(height: 24),
           _buildSummaryRow(
             'Checkout for',
@@ -238,6 +234,7 @@ class _CartScreenState extends State<CartScreen> {
         width: double.infinity,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.greenAccent,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),

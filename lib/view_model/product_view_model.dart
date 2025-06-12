@@ -10,12 +10,9 @@ class ProductViewModel with ChangeNotifier {
   CategoryModel? categoryModel;
   bool isLoading = false;
   String? errorMessage;
-  List<String> categoryList = [
-  ]; // Initialize as empty list instead of nullable
-  List<Product> productList = [
-  ]; // Initialize as empty list instead of nullable
-
-
+  List<String> categoryList = [];
+  List<Product> productList =
+      [];
 
   Future<void> getCategory() async {
     try {
@@ -23,8 +20,9 @@ class ProductViewModel with ChangeNotifier {
       errorMessage = null;
       notifyListeners();
 
-      final value = await ProductService.fetchCategory()
-          .timeout(const Duration(seconds: 30));
+      final value = await ProductService.fetchCategory().timeout(
+        const Duration(seconds: 30),
+      );
 
       if (value != null && value.categories != null) {
         categoryModel = value;
@@ -50,8 +48,9 @@ class ProductViewModel with ChangeNotifier {
       isLoading = true;
       errorMessage = null;
 
-      final value = await ProductService.fetchProductList()
-          .timeout(const Duration(seconds: 30));
+      final value = await ProductService.fetchProductList().timeout(
+        const Duration(seconds: 30),
+      );
 
       if (value != null && value.products != null) {
         productList.addAll(value.products!);
@@ -69,8 +68,5 @@ class ProductViewModel with ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
-
-
-// Remove the redundant getProductDetails method
   }
 }

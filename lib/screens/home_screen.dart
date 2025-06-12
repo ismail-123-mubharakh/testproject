@@ -3,15 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:testsc/screens/product_detail_screen.dart';
 import '../view_model/product_view_model.dart';
 
-class DiscoverScreen extends StatefulWidget {
-  const DiscoverScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<DiscoverScreen> createState() => _DiscoverScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _DiscoverScreenState extends State<DiscoverScreen> {
-  int _selectedCategoryIndex = 0;
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedCategoryIndex = 3;
   @override
   void initState() {
     super.initState();
@@ -20,16 +20,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     });
     context.read<ProductViewModel>().getProductList();
   }
+
   Future<void> _loadCategories() async {
     await context.read<ProductViewModel>().getCategory();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: Consumer <ProductViewModel>(builder: (context, viewModel, _){
-        return _buildBody(viewModel);
-      }),
+      body: Consumer<ProductViewModel>(
+        builder: (context, viewModel, _) {
+          return _buildBody(viewModel);
+        },
+      ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
@@ -81,10 +85,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             const SizedBox(width: 10),
             const Text(
               'Up to 50%',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const Spacer(),
             Icon(Icons.arrow_forward, color: Colors.grey[600]),
@@ -105,10 +106,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             children: [
               const Text(
                 'Categories',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton(
                 onPressed: _handleSeeAllCategories,
@@ -123,14 +121,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   Widget _buildCategoryChips(ProductViewModel viewModel) {
-
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: List.generate(
           viewModel.categoryList.length,
-              (index) => Padding(
+          (index) => Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: ChoiceChip(
               label: Text(viewModel.categoryList[index]),
@@ -140,16 +137,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   _selectedCategoryIndex = selected ? index : 0;
                 });
               },
-              selectedColor: Colors.blue[100],
+              selectedColor: Colors.greenAccent[100],
               labelStyle: TextStyle(
                 color: _selectedCategoryIndex == index
-                    ? Colors.blue
+                    ? Colors.green
                     : Colors.black,
               ),
               shape: StadiumBorder(
                 side: BorderSide(
                   color: _selectedCategoryIndex == index
-                      ? Colors.blue
+                      ? Colors.green
                       : Colors.transparent,
                 ),
               ),
@@ -167,66 +164,53 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // Number of columns
-        crossAxisSpacing: 16, // Horizontal space between items
-        mainAxisSpacing: 16, // Vertical space between items
-        childAspectRatio: 0.75, // Width/height ratio
-      ),
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.75,
+        ),
         itemCount: viewModel.productList.length,
         itemBuilder: (BuildContext context, int index) {
-        return GestureDetector(
-          onTap: () {
-            // Navigate to detail page
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProductDetailScreen(product: viewModel.productList[index]),
-              ),
-            );
-          },
-          child: ProductCard(
-            imageUrl: viewModel.productList[index].image!,
-            name: viewModel.productList[index].model.toString(),
-            price:viewModel.productList[index].price!.toDouble() ,
-            rating: viewModel.productList[index].discount!= null ?viewModel.productList[index].discount! : 0,
-          ),
-        );
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailScreen(
+                    product: viewModel.productList[index],
+                  ),
+                ),
+              );
+            },
+            child: ProductCard(
+              imageUrl: viewModel.productList[index].image!,
+              name: viewModel.productList[index].model.toString(),
+              price: viewModel.productList[index].price!.toDouble(),
+              rating: viewModel.productList[index].discount != null
+                  ? viewModel.productList[index].discount!
+                  : 0,
+            ),
+          );
         },
-          )
-      );
+      ),
+    );
   }
 
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
-          label: 'Favorites',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
     );
   }
 
-  void _handleSearchPressed() {
-    // Implement search functionality
-  }
+  void _handleSearchPressed() {}
 
-  void _handleSeeAllCategories() {
-    // Implement see all categories navigation
-  }
+  void _handleSeeAllCategories() {}
 }
 
 class ProductCard extends StatelessWidget {
@@ -235,24 +219,22 @@ class ProductCard extends StatelessWidget {
   final int rating;
   final String imageUrl;
   const ProductCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.price,
     required this.rating,
     required this.imageUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // Add this line
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               height: 120,
@@ -264,34 +246,33 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12), // Reduced from 38
-            Text(
-              name,
-              maxLines: 2, // Add max lines
-              overflow: TextOverflow.ellipsis, // Handle overflow
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14, // Slightly smaller font
+            const SizedBox(height: 8),
+            Expanded(
+              child: Text(
+                name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
               ),
             ),
-            const SizedBox(height: 8), // Reduced from 14
+            const SizedBox(height: 8),
             Text(
               '\$${price.toStringAsFixed(2)}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 14, // Slightly smaller font
+                fontSize: 14,
                 color: Colors.blue[700],
               ),
             ),
-            const SizedBox(height: 8), // Reduced from 14
+            const SizedBox(height: 8),
             Row(
               children: [
                 const Icon(Icons.star, color: Colors.amber, size: 16),
                 const SizedBox(width: 4),
-                Text(
-                  rating.toString(),
-                  style: const TextStyle(fontSize: 12), // Smaller font
-                ),
+                Text(rating.toString(), style: const TextStyle(fontSize: 12)),
               ],
             ),
           ],
