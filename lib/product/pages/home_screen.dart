@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:testsc/screens/product_detail_screen.dart';
-import '../view_model/product_view_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:testsc/product/pages/product_detail_screen.dart';
+import 'package:testsc/product/pages/product_detail_screen.dart';
+import '../bloc/product_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,27 +12,34 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedCategoryIndex = 3;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadCategories();
+      context.read<ProductBloc>().add(FetchCategories());
+      context.read<ProductBloc>().add(FetchProducts());
     });
-    context.read<ProductViewModel>().getProductList();
-  }
-
-  Future<void> _loadCategories() async {
-    await context.read<ProductViewModel>().getCategory();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: Consumer<ProductViewModel>(
-        builder: (context, viewModel, _) {
-          return _buildBody(viewModel);
+      body: BlocBuilder<ProductBloc, ProductState>(
+        builder: (context, state) {
+          if (state is ProductInitial || state is ProductLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is ProductError) {
+            return Center(child: Text(state.message));
+          }
+
+          if (state is ProductCategoriesLoaded) {
+            return _buildBody(state);
+          }
+
+          return const Center(child: Text('Unknown state'));
         },
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
@@ -50,14 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildBody(ProductViewModel viewModel) {
+  Widget _buildBody(ProductCategoriesLoaded state) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildClearanceBanner(),
-          _buildCategoriesSection(viewModel),
-          _buildProductsGrid(viewModel),
+          _buildCategoriesSection(state),
+          _buildProductsGrid(state),
         ],
       ),
     );
@@ -95,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCategoriesSection(ProductViewModel viewModel) {
+  Widget _buildCategoriesSection(ProductCategoriesLoaded state) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -114,38 +122,36 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          _buildCategoryChips(viewModel),
+          _buildCategoryChips(state),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryChips(ProductViewModel viewModel) {
+  Widget _buildCategoryChips(ProductCategoriesLoaded state) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: List.generate(
-          viewModel.categoryList.length,
-          (index) => Padding(
+          state.categories.length,
+              (index) => Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: ChoiceChip(
-              label: Text(viewModel.categoryList[index]),
-              selected: _selectedCategoryIndex == index,
+              label: Text(state.categories[index]),
+              selected: state.selectedCategoryIndex == index,
               onSelected: (selected) {
-                setState(() {
-                  _selectedCategoryIndex = selected ? index : 0;
-                });
+                context.read<ProductBloc>().add(SelectCategory(index));
               },
               selectedColor: Colors.greenAccent[100],
               labelStyle: TextStyle(
-                color: _selectedCategoryIndex == index
+                color: state.selectedCategoryIndex == index
                     ? Colors.green
                     : Colors.black,
               ),
               shape: StadiumBorder(
                 side: BorderSide(
-                  color: _selectedCategoryIndex == index
+                  color: state.selectedCategoryIndex == index
                       ? Colors.green
                       : Colors.transparent,
                 ),
@@ -157,7 +163,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProductsGrid(ProductViewModel viewModel) {
+  Widget _buildProductsGrid(ProductCategoriesLoaded state) {
+    if (state.isProductsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: GridView.builder(
@@ -169,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisSpacing: 16,
           childAspectRatio: 0.75,
         ),
-        itemCount: viewModel.productList.length,
+        itemCount: state.products.length,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
@@ -177,17 +187,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ProductDetailScreen(
-                    product: viewModel.productList[index],
+                    product: state.products[index],
                   ),
                 ),
               );
             },
             child: ProductCard(
-              imageUrl: viewModel.productList[index].image!,
-              name: viewModel.productList[index].model.toString(),
-              price: viewModel.productList[index].price!.toDouble(),
-              rating: viewModel.productList[index].discount != null
-                  ? viewModel.productList[index].discount!
+              imageUrl: state.products[index].image!,
+              name: state.products[index].model.toString(),
+              price: state.products[index].price!.toDouble(),
+              rating: state.products[index].discount != null
+                  ? state.products[index].discount!
                   : 0,
             ),
           );

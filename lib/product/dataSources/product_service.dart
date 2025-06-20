@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/category_model.dart';
-import '../models/product_category_model.dart';
+import 'package:testsc/product/models/category_model.dart';
+import 'package:testsc/product/models/product_category_model.dart';
 
 class ProductService {
   static const String _baseUrl1 =

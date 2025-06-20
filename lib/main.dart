@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:testsc/view_model/product_view_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:testsc/product/bloc/product_bloc.dart';
 
-import 'screens/home_screen.dart';
+import 'package:testsc/product/pages/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,10 +14,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ProductViewModel()),
-      ],
+    return BlocProvider(
+      create: (context) => ProductBloc(),
+      /*..add(FetchCategories())
+        ..add(FetchProducts())*/
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
