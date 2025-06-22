@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:testsc/product/pages/cart_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:testsc/cart/pages/cart_screen.dart';
 
+import '../../cart/bloc/cart_bloc.dart';
+import '../../cart/bloc/cart_event.dart';
 import '../models/product_category_model.dart';
-import 'cart_screen.dart';
+import '../../cart/pages/cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -16,6 +19,7 @@ int _selectedStorageIndex = 0;
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
+    final cartBloc = BlocProvider.of<CartBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Details'),
@@ -125,6 +129,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
+                      cartBloc.add(AddToCart(
+                        widget.product,
+                      ));
                       Navigator.push(
                         context,
                         MaterialPageRoute(

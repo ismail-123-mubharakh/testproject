@@ -4,6 +4,8 @@ import 'package:testsc/product/bloc/product_bloc.dart';
 
 import 'package:testsc/product/pages/home_screen.dart';
 
+import 'cart/bloc/cart_bloc.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -14,10 +16,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProductBloc(),
-      /*..add(FetchCategories())
-        ..add(FetchProducts())*/
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => ProductBloc()),
+        BlocProvider(create: (_) => CartBloc()),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
